@@ -168,3 +168,18 @@ body {
         font-size: 1rem;
     }
 }
+/* --- Profile Image Styling --- */
+.profile-img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover;  /* Ensures the photo doesn't look stretched */
+    border: 4px solid var(--accent-color);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
