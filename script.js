@@ -1,56 +1,61 @@
-/* --- Dark Mode Logic --- */
-const themeToggle = document.getElementById('theme-toggle');
+// --- Dark Mode Toggle ---
+const themeToggleBtn = document.getElementById('theme-toggle');
 const body = document.body;
 
-// Check if user previously selected dark mode
+// Check for saved user preference in local storage
 const currentTheme = localStorage.getItem('theme');
-if (currentTheme) {
-    body.classList.add(currentTheme);
-    if (currentTheme === 'dark-mode') {
-        themeToggle.innerText = '☀️';
-    }
+if (currentTheme === 'dark') {
+    body.classList.add('dark-mode');
+    themeToggleBtn.textContent = '☀️'; // Change icon to sun
 }
 
-themeToggle.addEventListener('click', () => {
+themeToggleBtn.addEventListener('click', () => {
     body.classList.toggle('dark-mode');
 
     let theme = 'light';
     if (body.classList.contains('dark-mode')) {
-        theme = 'dark-mode';
-        themeToggle.innerText = '☀️';
+        theme = 'dark';
+        themeToggleBtn.textContent = '☀️';
     } else {
-        themeToggle.innerText = '🌙';
+        themeToggleBtn.textContent = '🌙';
     }
+    
     // Save preference to local storage
     localStorage.setItem('theme', theme);
 });
 
-/* --- Carousel Logic --- */
+// --- Project Carousel Logic ---
 const track = document.querySelector('.carousel-track');
-let index = 0;
+const cards = Array.from(track.children);
+const nextButton = document.querySelector('.next');
+const prevButton = document.querySelector('.prev');
 
-function moveSlide(direction) {
-    const slides = document.querySelectorAll('.project-card');
-    const totalSlides = slides.length;
+let currentIndex = 0;
 
-    index += direction;
-
-    // Loop back to start/end
-    if (index < 0) {
-        index = totalSlides - 1;
-    } else if (index >= totalSlides) {
-        index = 0;
+function updateCarousel() {
+    // Check if cards exist to prevent errors
+    if(cards.length > 0) {
+        const cardWidth = cards[0].getBoundingClientRect().width;
+        // Move the track to the left by the width of the card * index
+        track.style.transform = 'translateX(-' + (cardWidth * currentIndex) + 'px)';
     }
-
-    const slideWidth = slides[0].clientWidth;
-    track.style.transform = `translateX(-${index * slideWidth}px)`;
 }
 
-// Handle window resize to reset carousel alignment
-window.addEventListener('resize', () => {
-    const slides = document.querySelectorAll('.project-card');
-    if(slides.length > 0) {
-        const slideWidth = slides[0].clientWidth;
-        track.style.transform = `translateX(-${index * slideWidth}px)`;
+// Function called by the HTML onclick buttons
+function moveSlide(direction) {
+    currentIndex += direction;
+
+    // Loop back to start if at the end
+    if (currentIndex >= cards.length) {
+        currentIndex = 0;
+    } 
+    // Loop to end if at the start and going back
+    else if (currentIndex < 0) {
+        currentIndex = cards.length - 1;
     }
-});
+
+    updateCarousel();
+}
+
+// Handle window resize to adjust carousel width automatically
+window.addEventListener('resize', updateCarousel);
